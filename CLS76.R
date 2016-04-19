@@ -300,7 +300,7 @@ for (i in 25:28) #loop through first 12
 #Chart done!
 dev.off()
 
-svg("Time Shift (all),svg") #All together
+svg("Time Shift (all).svg") #All together
 par(col = "black", oma=c(0, 0, 0, 0))
 plot(1, type="n", xlab="Age (days)", ylab="Time shift (hours)", xlim = txa, ylim = tya, main="Time Shift of all strains\n(Relative time to reach an OD of 0.3)")
 for (i in 1:28)
