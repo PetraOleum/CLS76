@@ -1,3 +1,4 @@
-.svg
-.xls
-.xlsx
+*.svg
+*.xls
+*.xlsx
+*.swp
