@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 library("gdata") #Needed for the read.xls function
 
 pcls = rep_len(c("black", "blue", "green", "red", "yellow", "darkblue", "magenta", "gold", "forestgreen", "darkorange3", "darkorchid", "darkmagenta", "darkolivegreen", "brown1", "azure4", "chartreuse4", "cadetblue4", "coral", "deeppink4", "honeydew4", "greenyellow"), 28) #Random list of colours, which wraps around so that the list is 28 items long, and chosen to not have similar colours next to each other hopefully
