@@ -51,7 +51,11 @@ for (sheet in 1:6) #Loop through the days again
 	for (i in 1:28) #Loop through columns
 	{
 		par(col=pcls[i], pch=(i %% 25)) #Set colour and symbol (currently unused)
-		lines(daylist[[sheet]][[1]], daylist[[sheet]][[i + 1]], type="l") #Plot the data
+		xval = daylist[[sheet]][[1]]
+		avg = daylist[[sheet]][[i + 1]]
+		stv = stdvdaylist[[sheet]][[i + 1]]
+		arrows(xval, avg - stv, xval, avg + stv, length=0.01, angle=90, code=3, col="gray20", lwd=.3, lend="square")
+		lines(xval, avg, type="l") #Plot the data
 	}
 }
 #Create legend
@@ -79,7 +83,6 @@ for (i in 1:12) #loop through first 12
 		lines(xval, avg, type="l") #Plot the data
 	}
 }
-warnings()
 #Create legend
 par(oma = c(0,0,0,0), new=TRUE, fig=c(0,1,0,1), mar = c(0,0,0,0), col="black")
 plot(0,0,type="n",bty="n",xaxt="n",yaxt="n")
