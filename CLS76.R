@@ -188,7 +188,7 @@ dev.off()
 svg("Doubling time (part 3) 13 to 24.svg") #Second 12
 par(mfrow=c(3,4)) #3 rows, 4 columns
 par(oma = c(1,0,0,0)) #Space for legend
-for (i in 13:24) #loop through first 12
+for (i in 13:24) #loop through second 12
 {
 	par(col="black") #Default colour should be black
 	plot(1, type="n", xlab="Age (days)", ylab="Doubling time (minutes)", xlim=dxarr, ylim=dyarr, main=mutants[i]) #Blank plot, with labels but not data
@@ -207,7 +207,7 @@ dev.off()
 svg("Doubling time (part 3) 25 to 28.svg") #Final 4
 par(mfrow=c(3,4)) #3 rows, 4 columns
 par(oma = c(1,0,0,0)) #Space for legend
-for (i in 25:28) #loop through first 12
+for (i in 25:28) #loop through final 4
 {
 	par(col="black") #Default colour should be black
 	plot(1, type="n", xlab="Age (days)", ylab="Doubling time (minutes)", xlim=dxarr, ylim=dyarr, main=mutants[i]) #Blank plot, with labels but not data
@@ -277,7 +277,7 @@ dev.off()
 svg("Time Shift (part 4a) 13 to 24.svg") #Second 12
 par(mfrow=c(3,4)) #3 rows, 4 columns
 par(oma = c(0,0,0,0)) #Space for legend
-for (i in 13:24) #loop through first 12
+for (i in 13:24) #loop through second 12
 {
 	par(col="black") #Default colour should be black
 	plot(1, type="n", xlab="Age (days)", ylab="Time shift (hours)", xlim=txa, ylim=tya, main=mutants[i]) #Blank plot, with labels but not data
@@ -290,7 +290,7 @@ dev.off()
 svg("Time Shift (part 4a) 25 to 28.svg") #Final 4
 par(mfrow=c(3,4)) #3 rows, 4 columns
 par(oma = c(0,0,0,0)) 
-for (i in 25:28) #loop through first 12
+for (i in 25:28) #loop through final 4
 {
 	par(col="black") #Default colour should be black
 	plot(1, type="n", xlab="Age (days)", ylab="Time shift (hours)", xlim=txa, ylim=tya, main=mutants[i]) #Blank plot, with labels but not data
@@ -311,4 +311,9 @@ for (i in 1:28)
 par(col="black")
 legend("left", bty="n", mutants, lty=c(1,1), horiz=FALSE, lwd=c(2.5, 2.5), col=pcls, cex=0.80, xpd=TRUE)
 dev.off()
+
+#Calculating survival percentage
+
+sproportion = 1 / (2 ^ (tshift / intervald))
+sproportion[,1] = tshift[,1]
 
