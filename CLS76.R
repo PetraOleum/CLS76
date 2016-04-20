@@ -314,6 +314,20 @@ dev.off()
 
 #Calculating survival percentage
 
-sproportion = 1 / (2 ^ (tshift / intervald))
-sproportion[,1] = tshift[,1]
+sproportion = data.frame(tshift[1], 1 / ( 2 ^ (tshift[-1] / inflection[-1])))
 
+txa = c(0, 13)
+tya = c(0, 100)
+#Graph survival percentages all together
+
+svg("Survival Percentage(all).svg")
+par(col = "black", oma=c(0, 0, 0, 0))
+plot(1, type="n", xlab="Age (days)", ylab="Survival percentage", xlim = txa, ylim = tya, main = "Survival percentage of all strains")
+for (i in 1:28)
+{
+	par(col = pcls[i], pch=((i %% 25) + 1))
+	lines(sproportion[[1]], sproportion[[i + 1]] * 100, type="l")
+}
+par(col="black")
+legend("left", bty="n", mutants, lty=c(1,1), horiz=FALSE, lwd=c(2.5, 2.5), col=pcls, cex=0.80, xpd=TRUE)
+dev.off()
