@@ -1,16 +1,16 @@
 #!/usr/bin/env Rscript
-library("gdata") #Needed for the read.xls function
+#library("gdata") #Needed for the read.xls function
 
 pcls = rep_len(c("black", "blue", "green", "red", "yellow", "darkblue", "magenta", "gold", "forestgreen", "darkorange3", "darkorchid", "darkmagenta", "darkolivegreen", "brown1", "azure4", "chartreuse4", "cadetblue4", "coral", "deeppink4", "honeydew4", "greenyellow"), 28) #Random list of colours, which wraps around so that the list is 28 items long, and chosen to not have similar colours next to each other hopefully
 titles = c("Day 2", "Day 4", "Day 6", "Day 9", "Day 11", "Day 13") #Titles for the first set of graphs
 daynos = c( 2, 4, 6, 9, 11, 13) #The numbers for the days in integer form
-s8 = read.xls("CLS76_dataset from Matt Kaeberlein(1).xls", sheet=8) #The names of the columns are in sheet 8, column D
+s8 = read.csv("CLS76_well_info.csv", header=TRUE) #The names of the columns are in column D
 
 daylist = list() #We need a list of data frames to store each days worth of stuff
 stdvdaylist = list() #List of data frames of standard deviation data
 for (sheet in 1:6) #There are six sheets of data
 {
-	s1 = read.xls("CLS76_dataset from Matt Kaeberlein(1).xls", sheet=sheet) #read the sheet
+	s1 = read.csv(paste("CLS76_day", daynos[sheet], ".csv", sep=""), header=TRUE) #read the sheet
 	s1 = s1[-c(1), ] #Remove the first row, as this is noise
 	times = s1[1] #Grab the times column
 	#The following is a hackish way to convert this column into a floating point of hours
