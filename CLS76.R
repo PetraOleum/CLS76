@@ -7,6 +7,7 @@ daynos = c( 2, 4, 6, 9, 11, 13) #The numbers for the days in integer form
 s8 = read.xls("CLS76_dataset from Matt Kaeberlein(1).xls", sheet=8) #The names of the columns are in sheet 8, column D
 
 daylist = list() #We need a list of data frames to store each days worth of stuff
+stdvdaylist = list() #List of data frames of standard deviation data
 for (sheet in 1:6) #There are six sheets of data
 {
 	s1 = read.xls("CLS76_dataset from Matt Kaeberlein(1).xls", sheet=sheet) #read the sheet
@@ -17,12 +18,20 @@ for (sheet in 1:6) #There are six sheets of data
 	times3 = strptime(times2, format = "%H:%M:%S")
 	times4 = times3$hour + ((times3$sec / 60) + times3$min) / 60
 	daylist[[sheet]] = data.frame(times4) #begin the data frame for day 2 by adding our new and improved Time column
+	stdvdaylist[[sheet]] = data.frame(times4)
 	names(daylist[[sheet]])[1] = "Time" #Name the column while we are at it
+	names(stdvdaylist[[sheet]])[1] = "Time"
 	blanks = (s1[86] + s1[87] + s1[88]) / 3 # Get blanks column for normalisation
 	for (i in 1:28) #Loop through the non-blank columns
 	{
-		daylist[[sheet]][i + 1] = (s1[i * 3 - 1] + s1[i * 3] + s1[i * 3 + 1]) / 3 - blanks #Create columns from averaging three columns
-		names(daylist[[sheet]])[i + 1] = toString(s8[i * 3 - 2, 4]) #Modify name of column
+		columna = s1[i * 3 - 1] - blanks
+		columnb = s1[i * 3] - blanks
+		columnc = s1[i * 3 + 1] - blanks
+		columnmeans = (columna + columnb + columnc) / 3
+		columnstdv = sqrt(((columna - columnmeans) ^ 2 + (columnb - columnmeans) ^ 2 + (columnc - columnmeans) ^ 2) / 3)
+		daylist[[sheet]][i + 1] = columnmeans #Create columns from averaging three columns
+		stdvdaylist[[sheet]][i + 1] = columnstdv
+		names(daylist[[sheet]])[i + 1] = toString(s8[i * 3 - 2, 4]) #Modify name of column 
 	}
 }
 mutants = names(daylist[[1]])[-1] #The names of all the mutants. The first item is "Time" so that is excluded
@@ -58,14 +67,19 @@ par(mfrow=c(3,4)) #3 rows, 4 columns
 par(oma = c(1,0,0,0)) #Space for legend
 for (i in 1:12) #loop through first 12
 {
-	par(col="black") #Default colour should be black
+	par(col="black", lwd = .7)
 	plot(1, type="n", xlab="Time (hours)", ylab="Absorbency at OD600", xlim=xax, ylim=yax, main=mutants[i]) #Blank plot, with labels but not data
 	for (sheet in 1:6) #loop through the sheets also
 	{
 		par(col=pcls[sheet], pch=(sheet %% 25)) #Set colour and symbol (currently unused)
-		lines(daylist[[sheet]][[1]], daylist[[sheet]][[i + 1]], type="l") #Plot the data
+		xval = daylist[[sheet]][[1]]
+		avg = daylist[[sheet]][[i + 1]]
+		stv = stdvdaylist[[sheet]][[i + 1]]
+		arrows(xval, avg - stv, xval, avg + stv, length=0.01, angle=90, code=3, col="gray20", lwd=.3, lend="square")
+		lines(xval, avg, type="l") #Plot the data
 	}
 }
+warnings()
 #Create legend
 par(oma = c(0,0,0,0), new=TRUE, fig=c(0,1,0,1), mar = c(0,0,0,0), col="black")
 plot(0,0,type="n",bty="n",xaxt="n",yaxt="n")
@@ -78,12 +92,16 @@ par(mfrow=c(3,4))
 par(oma = c(1,0,0,0))
 for (i in 13:24)
 {
-	par(col="black")
+	par(col="black", lwd = .7)
 	plot(1, type="n", xlab="Time (hours)", ylab="Absorbency at OD600", xlim=xax, ylim=yax, main=mutants[i]) #Blank plot, with labels but not data
 	for (sheet in 1:6)
 	{
 		par(col=pcls[sheet], pch=(sheet %% 25)) #Set colour and symbol (currently unused)
-		lines(daylist[[sheet]][[1]], daylist[[sheet]][[i + 1]], type="l") #Plot the data
+		xval = daylist[[sheet]][[1]]
+		avg = daylist[[sheet]][[i + 1]]
+		stv = stdvdaylist[[sheet]][[i + 1]]
+		arrows(xval, avg - stv, xval, avg + stv, length=0.01, angle=90, code=3, col="gray20", lwd=.3, lend="square")
+		lines(xval, avg, type="l") #Plot the data
 	}
 }
 par(oma = c(0,0,0,0), new=TRUE, fig=c(0,1,0,1), mar = c(0,0,0,0), col="black")
@@ -97,12 +115,16 @@ par(mfrow=c(3,4)) #NB: This will make plots of the same dimensions as before, fo
 par(oma = c(1,0,0,0))
 for (i in 25:28)
 {
-	par(col="black")
+	par(col="black", lwd = .7)
 	plot(1, type="n", xlab="Time (hours)", ylab="Absorbency at OD600", xlim=xax, ylim=yax, main=mutants[i]) #Blank plot, with labels but not data
 	for (sheet in 1:6)
 	{
 		par(col=pcls[sheet], pch=(sheet %% 25)) #Set colour and symbol (currently unused)
-		lines(daylist[[sheet]][[1]], daylist[[sheet]][[i + 1]], type="l") #Plot the data
+		xval = daylist[[sheet]][[1]]
+		avg = daylist[[sheet]][[i + 1]]
+		stv = stdvdaylist[[sheet]][[i + 1]]
+		arrows(xval, avg - stv, xval, avg + stv, length=0.01, angle=90, code=3, col="gray20", lwd=.3, lend="square")
+		lines(xval, avg, type="l") #Plot the data
 	}
 }
 par(oma = c(0,0,0,0), new=TRUE, fig=c(0,1,0,1), mar = c(0,0,0,0), col="black")
@@ -331,3 +353,4 @@ for (i in 1:28)
 par(col="black")
 legend("left", bty="n", mutants, lty=c(1,1), horiz=FALSE, lwd=c(2.5, 2.5), col=pcls, cex=0.80, xpd=TRUE)
 dev.off()
+
