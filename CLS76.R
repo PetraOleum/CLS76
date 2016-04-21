@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-#library("gdata") #Needed for the read.xls function
 
 pcls = rep_len(c("black", "blue", "green", "red", "yellow", "darkblue", "magenta", "gold", "forestgreen", "darkorange3", "darkorchid", "darkmagenta", "darkolivegreen", "brown1", "azure4", "chartreuse4", "cadetblue4", "coral", "deeppink4", "honeydew4", "greenyellow"), 28) #Random list of colours, which wraps around so that the list is 28 items long, and chosen to not have similar colours next to each other hopefully
 titles = c("Day 2", "Day 4", "Day 6", "Day 9", "Day 11", "Day 13") #Titles for the first set of graphs
@@ -64,6 +63,25 @@ plot(0,0,type="n",bty="n",xaxt="n",yaxt="n")
 legend("right", bty="n", mutants, lty=c(1,1), horiz=FALSE, lwd=c(2.5, 2.5), col=pcls, cex=0.80, xpd=TRUE)
 #Chart done!
 dev.off()
+
+#Charts of all the mutants individually
+for (i in 1:28) {
+	svg(paste("Impact of ",mutants[i],".svg", sep=""))
+	par(col="black", lwd = 1)
+	plot(1, type="n", xlab="Time (hours)", ylab="Absorbency at OD600", xlim=xax, ylim=yax, main=mutants[i]) #Blank plot, with labels but not data
+	for (sheet in 1:6) #loop through the sheets also
+	{
+		par(col=pcls[sheet], pch=(sheet %% 25)) #Set colour and symbol (currently unused)
+		xval = daylist[[sheet]][[1]]
+		avg = daylist[[sheet]][[i + 1]]
+		stv = stdvdaylist[[sheet]][[i + 1]]
+		arrows(xval, avg - stv, xval, avg + stv, length=0.01, angle=90, code=3, col="gray20", lwd=.3, lend="square")
+		lines(xval, avg, type="l") #Plot the data
+	}
+	legend("bottom", bty="n", titles, lty=c(1,1), horiz=TRUE, lwd=c(2.5, 2.5), col=pcls, cex=0.80, xpd=TRUE)
+	dev.off()
+
+}
 
 #Make SVGs of second set of 28 graphs
 svg("Impact of each mutation (part 2) 01 to 12.svg") #First 12
