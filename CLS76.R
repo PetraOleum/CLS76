@@ -7,6 +7,7 @@ s8 = read.csv("CLS76_well_info.csv", header=TRUE) #The names of the columns are 
 
 daylist = list() #We need a list of data frames to store each days worth of stuff
 stdvdaylist = list() #List of data frames of standard deviation data
+rawdaylist = list() #Raw data list
 for (sheet in 1:6) #There are six sheets of data
 {
 	s1 = read.csv(paste("CLS76_day", daynos[sheet], ".csv", sep=""), header=TRUE) #read the sheet
@@ -18,14 +19,19 @@ for (sheet in 1:6) #There are six sheets of data
 	times4 = times3$hour + ((times3$sec / 60) + times3$min) / 60
 	daylist[[sheet]] = data.frame(times4) #begin the data frame for day 2 by adding our new and improved Time column
 	stdvdaylist[[sheet]] = data.frame(times4)
+	rawdaylist[[sheet]] = data.frame(times4)
 	names(daylist[[sheet]])[1] = "Time" #Name the column while we are at it
 	names(stdvdaylist[[sheet]])[1] = "Time"
+	names(rawdaylist[[sheet]])[1] = "Time"
 	blanks = (s1[86] + s1[87] + s1[88]) / 3 # Get blanks column for normalisation
 	for (i in 1:28) #Loop through the non-blank columns
 	{
 		columna = s1[i * 3 - 1] - blanks
 		columnb = s1[i * 3] - blanks
 		columnc = s1[i * 3 + 1] - blanks
+		rawdaylist[[sheet]][3 * i - 1] = columna
+		rawdaylist[[sheet]][3 * i] = columnb
+		rawdaylist[[sheet]][3 * i + 1] = columnc
 		columnmeans = (columna + columnb + columnc) / 3
 		columnstdv = sqrt(((columna - columnmeans) ^ 2 + (columnb - columnmeans) ^ 2 + (columnc - columnmeans) ^ 2) / 3)
 		daylist[[sheet]][i + 1] = columnmeans #Create columns from averaging three columns
@@ -62,6 +68,43 @@ par(oma = c(0,0,0,0), new=TRUE, fig=c(0, 1, 0, 1), mar = c(0,0,0,0), col="black"
 plot(0,0,type="n",bty="n",xaxt="n",yaxt="n")
 legend("right", bty="n", mutants, lty=c(1,1), horiz=FALSE, lwd=c(2.5, 2.5), col=pcls, cex=0.80, xpd=TRUE)
 #Chart done!
+dev.off()
+
+#Make SVG of each day individually
+for (sheet in 1:6) {
+	svg(paste("Growth of all mutants (Day ", daynos[sheet], ").svg", sep=""))
+	par(col="black", lwd=1)
+	plot(1, type="n", xlab="Time (hours)", ylab="Absorbency at OD600", xlim=xax, ylim=yax, main=titles[sheet])
+	for (i in 1:28) {
+		par(col=pcls[i], pch=(i%% 35))
+		xval = daylist[[sheet]][[1]]
+		avg = daylist[[sheet]][[i + 1]]
+		stv = stdvdaylist[[sheet]][[i + 1]]
+		arrows(xval, avg - stv, xval, avg + stv, length=0.01, angle=90, code=3, col="gray20", lwd=.3, lend="square")
+		lines(xval, avg, type="l") #Plot the data
+	}
+	par(col="black")
+	legend("topleft", bty="n", mutants, lty=c(1,1), horiz=FALSE, lwd=c(2.5, 2.5), col=pcls, cex=0.80, xpd=TRUE)
+	dev.off()
+}
+
+#Make SVG of day 11, highlighting GAT1
+
+svg("Day 13 growth highlighting GAT1.svg")
+par(col="black", lwd=1)
+plot(1, type="n", xlab="Time (hours)", ylab="Absorbency at OD600", xlim=xax, ylim=yax, main=titles[sheet])
+for (i in 1:28) {
+	par(col=pcls[i], pch=(i%% 35))
+	xval = daylist[[6]][[1]]
+	avg = daylist[[6]][[i + 1]]
+	stv = stdvdaylist[[6]][[i + 1]]
+	arrows(xval, avg - stv, xval, avg + stv, length=0.01, angle=90, code=3, col="gray20", lwd=.3, lend="square")
+	lines(xval, avg, type="l") #Plot the data
+}
+par(col = "red", lwd=5)
+lines(daylist[[6]][[1]], daylist[[6]][[18]], type="l")
+par(col="black")
+legend("topleft", bty="n", mutants, lty=c(1,1), horiz=FALSE, lwd=c(2.5, 2.5), col=pcls, cex=0.80, xpd=TRUE)
 dev.off()
 
 #Charts of all the mutants individually
